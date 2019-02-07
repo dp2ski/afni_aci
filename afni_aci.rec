@@ -1,0 +1,128 @@
+BootStrap: docker
+From: centos:centos7
+
+%environment
+    export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+    export PATH=/usr/local/bin:$PATH
+    export PATH=/usr/abin:$PATH
+    export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=/usr/lib:$LD_LIBRARY_PATH
+    export HOME=/storage/home/`whoami`
+    export R_LIBS=/usr/R:$R_LIBS
+%runscript
+    echo `cat /etc/redhat-release`
+
+%post
+    yum groupinstall -y "Development Tools" --setopt=group_package_types=mandatory,default,optional
+    yum install -y wget valgrind valgrind-devel
+
+    wget https://www.open-mpi.org/software/ompi/v1.10/downloads/openmpi-1.10.1.tar.gz
+    tar -xvf openmpi-1.10.1.tar.gz
+    rm openmpi-1.10.1.tar.gz
+    cd  openmpi-1.10.1
+    ./configure CFLAGS=-m64 CXXFLAGS=-m64 FFLAGS=-m64 FCFLAGS=-m64 \
+    --with-pic \
+    --enable-oshmem \
+    --enable-debug \
+    --enable-mpi-thread-multiple \
+    --with-hwloc=internal \
+    --with-x \
+    --with-valgrind=/usr \
+    --enable-static \
+    --enable-mem-debug \
+    --enable-mem-profile
+
+    make
+    make install
+
+    export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+    export PATH=/usr/local/bin:$PATH
+
+
+    yum install -y epel-release
+    yum install -y tcsh libXp openmotif gsl xorg-x11-fonts-misc PyQt4 R-devel netpbm-progs gnome-tweak-tool ed libpng12 xorg-x11-server-Xvfb
+    yum install -y mesa-libGLU mesa-libGLw
+    yum install -y netpbm openssl-devel
+    yum install -y curl-devel
+     yum install -y libcurl-devel
+    yum install -y mlocate wget
+    yum install -y libmpc-devel mpfr-devel gmp-devel
+    yum install -y cairo-devel udunits2-devel
+    yum install -y gmp-devel
+    updatedb
+    yum update -y && yum clean all
+    rm -rf /var/cache/yum
+
+    export HOME=/usr
+    export PATH=/usr/abin:$PATH
+
+
+    curl -O https://afni.nimh.nih.gov/pub/dist/bin/linux_ubuntu_16_64/@update.afni.binaries
+    tcsh @update.afni.binaries -package linux_centos_7_64 -do_extras
+
+    export PATH=/usr/abin:$PATH
+
+    echo '''CXX14 = g++
+    CXX14FLAGS = -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g
+    CXX14PICFLAGS = -fpic
+    CXX14STD = -std=gnu++11
+    SHLIB_CXX14LD = $(CXX11) $(CXX11STD)
+    SHLIB_CXX14LDFLAGS = -shared'''>>/usr/lib64/R/etc/Makeconf
+
+    export R_LIBS=$HOME/R
+    mkdir $R_LIBS
+    echo 'export R_LIBS=$HOME/R' >> ~/.bashrc
+    source ~/.bashrc
+
+
+    su - -c "R -e \"install.packages('igraph',dependencies=T,repos='http://cran.us.r-project.org')\""
+    su - -c "R -e \"install.packages('shinystan',dependencies=T,repos='http://cran.us.r-project.org')\""
+    su - -c "R -e \"install.packages('rstan',dependencies=T,repos='http://cran.us.r-project.org')\""
+    su - -c "R -e \"install.packages('mitml',dependencies=T,repos='http://cran.us.r-project.org')\""
+    su - -c "R -e \"install.packages('mice',dependencies=T,repos='http://cran.us.r-project.org')\""
+    su - -c "R -e \"install.packages('Rmpi',dependencies=T,repos='http://cran.us.r-project.org')\""
+    su - -c "R -e \"install.packages('brms',dependencies=T,repos='http://cran.us.r-project.org')\""
+
+    cp $HOME/abin/AFNI.afnirc $HOME/.afnirc
+    suma -update_env
+
+    curl -O https://afni.nimh.nih.gov/pub/dist/edu/data/CD.tgz
+    tar xvzf CD.tgz
+    cd CD
+    tcsh s2.cp.files . ~
+    cd ..
+    rm CD.tgz -rf
+
+    echo 'set filec'    >> ~/.cshrc
+    echo 'set autolist' >> ~/.cshrc
+    echo 'set nobeep'   >> ~/.cshrc
+
+    echo 'alias ls ls --color=auto' >> ~/.cshrc
+    echo 'alias ll ls --color -l'   >> ~/.cshrc
+    echo 'alias ls="ls --color"'    >> ~/.bashrc
+    echo 'alias ll="ls --color -l"' >> ~/.bashrc
+
+    chsh -s /usr/bin/tcsh
+    cd /usr/bin/
+    ./tcsh
+    setenv R_LIBS $HOME/R
+    echo 'setenv R_LIBS ~/R' >> ~/.cshrc
+    . ~/.cshrc
+
+    rPkgsInstall -pkgs ALL
+
+    cd $HOME
+    afni_system_check.py -check_all > out.afni_system_check.txt
+
+    afni -ver
+
+    @update.afni.binaries -d
+
+    mkdir -p /storage/home
+    mkdir -p /storage/work
+    mkdir -p /gpfs/scratch
+    mkdir -p /gpfs/group
+    mkdir -p /var/spool/torque
+
+
+
