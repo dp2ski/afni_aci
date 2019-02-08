@@ -124,5 +124,11 @@ From: centos:centos7
     mkdir -p /gpfs/group
     mkdir -p /var/spool/torque
 
+    #add requested files
+    git clone https://github.com/dp2ski/afni_aci
+    cd afni_aci
+    tar -xvzf ICC.tgz
+    cp 3dICC /usr/abin
+    cp 3dICC.R /usr/abin
 
 
