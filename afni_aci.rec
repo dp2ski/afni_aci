@@ -131,4 +131,7 @@ From: centos:centos7
     cp 3dICC /usr/abin
     cp 3dICC.R /usr/abin
 
-
+    #add freesurfer module
+    mkdir -p opt/aci/sw/freesurfer
+    export PATH=/opt/aci/sw/freesurfer/6.0.0:$PATH
+    export FREESURFER_HOME=/opt/aci/sw/freesurfer/6.0.0
