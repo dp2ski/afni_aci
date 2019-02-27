@@ -9,6 +9,11 @@ From: centos:centos7
     export LD_LIBRARY_PATH=/usr/lib:$LD_LIBRARY_PATH
     export HOME=/storage/home/`whoami`
     export R_LIBS=/usr/R:$R_LIBS
+
+    #freesurfer vars
+    export FREESURFER_HOME=/gpfs/group/klk37/default/sw/freesurfer/6.0.0
+    export PATH=FREESURFER_HOME/bin:$PATH
+
 %runscript
     echo `cat /etc/redhat-release`
 
@@ -38,7 +43,6 @@ From: centos:centos7
     export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
     export PATH=/usr/local/bin:$PATH
 
-
     yum install -y epel-release
     yum install -y tcsh libXp openmotif gsl xorg-x11-fonts-misc PyQt4 R-devel netpbm-progs gnome-tweak-tool ed libpng12 xorg-x11-server-Xvfb
     yum install -y mesa-libGLU mesa-libGLw
@@ -55,7 +59,6 @@ From: centos:centos7
 
     export HOME=/usr
     export PATH=/usr/abin:$PATH
-
 
     curl -O https://afni.nimh.nih.gov/pub/dist/bin/linux_ubuntu_16_64/@update.afni.binaries
     tcsh @update.afni.binaries -package linux_centos_7_64 -do_extras
@@ -131,7 +134,5 @@ From: centos:centos7
     cp 3dICC /usr/abin
     cp 3dICC.R /usr/abin
 
-    #add freesurfer module
-    mkdir -p opt/aci/sw/freesurfer
-    export PATH=/opt/aci/sw/freesurfer/6.0.0:$PATH
-    export FREESURFER_HOME=/opt/aci/sw/freesurfer/6.0.0
+    #use freesurfer code, copied over from the module /opt/aci/sw/freesurfer
+    mkdir -p /gpfs/group/klk37/default/sw/freesurfer/6.0.0/
