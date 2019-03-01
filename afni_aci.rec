@@ -12,7 +12,7 @@ From: centos:centos7
 
     #freesurfer vars
     export FREESURFER_HOME=/gpfs/group/klk37/default/sw/freesurfer/6.0.0
-    export PATH=FREESURFER_HOME/bin:$PATH
+    export PATH=$FREESURFER_HOME/bin:$PATH
 
 %runscript
     echo `cat /etc/redhat-release`
