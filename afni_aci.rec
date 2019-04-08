@@ -20,6 +20,7 @@ From: centos:centos7
 %post
     yum groupinstall -y "Development Tools" --setopt=group_package_types=mandatory,default,optional
     yum install -y wget valgrind valgrind-devel
+    yum install vim-X11 vim-common vim-enhanced vim-minimal
 
     wget https://www.open-mpi.org/software/ompi/v1.10/downloads/openmpi-1.10.1.tar.gz
     tar -xvf openmpi-1.10.1.tar.gz
@@ -48,7 +49,7 @@ From: centos:centos7
     yum install -y mesa-libGLU mesa-libGLw
     yum install -y netpbm openssl-devel
     yum install -y curl-devel
-     yum install -y libcurl-devel
+    yum install -y libcurl-devel
     yum install -y mlocate wget
     yum install -y libmpc-devel mpfr-devel gmp-devel
     yum install -y cairo-devel udunits2-devel
@@ -77,7 +78,6 @@ From: centos:centos7
     echo 'export R_LIBS=$HOME/R' >> ~/.bashrc
     source ~/.bashrc
 
-
     su - -c "R -e \"install.packages('igraph',dependencies=T,repos='http://cran.us.r-project.org')\""
     su - -c "R -e \"install.packages('shinystan',dependencies=T,repos='http://cran.us.r-project.org')\""
     su - -c "R -e \"install.packages('rstan',dependencies=T,repos='http://cran.us.r-project.org')\""
@@ -85,6 +85,10 @@ From: centos:centos7
     su - -c "R -e \"install.packages('mice',dependencies=T,repos='http://cran.us.r-project.org')\""
     su - -c "R -e \"install.packages('Rmpi',dependencies=T,repos='http://cran.us.r-project.org')\""
     su - -c "R -e \"install.packages('brms',dependencies=T,repos='http://cran.us.r-project.org')\""
+    su - -c "R -e \"install.packages('blme',dependencies=T,repos='http://cran.us.r-project.org')\""
+    su - -c "R -e \"install.packages('lme4',dependencies=T,repos='http://cran.us.r-project.org')\""
+    su - -c "R -e \"install.packages('metafor',dependencies=T,repos='http://cran.us.r-project.org')\""
+    su - -c "R -e \"install.packages('snow',dependencies=T,repos='http://cran.us.r-project.org')\""
 
     cp $HOME/abin/AFNI.afnirc $HOME/.afnirc
     suma -update_env
@@ -133,6 +137,8 @@ From: centos:centos7
     tar -xvzf ICC.tgz
     cp 3dICC /usr/abin
     cp 3dICC.R /usr/abin
+    cp 3dICC.R /usr/R/
+    cp 3DICC $HOME/abin/
 
     #use freesurfer code, copied over from the module /opt/aci/sw/freesurfer
     mkdir -p /gpfs/group/klk37/default/sw/freesurfer/6.0.0/
